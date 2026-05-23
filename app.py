@@ -3,6 +3,21 @@ import pandas as pd
 import joblib
 import os
 
+state_encoder = joblib.load("models/st_name_encoder.pkl")
+pc_encoder = joblib.load("models/pc_name_encoder.pkl")
+party_encoder = joblib.load("models/partyname_encoder.pkl")
+partyabbre_encoder = joblib.load("models/partyabbre_encoder.pkl")
+gender_encoder = joblib.load("models/cand_sex_encoder.pkl")
+pctype_encoder = joblib.load("models/pc_type_encoder.pkl")
+
+st.write("State Encoder Sample:")
+st.write(state_encoder.classes_[:20])
+
+st.write("Party Encoder Sample:")
+st.write(party_encoder.classes_[:20])
+
+st.write("PC Encoder Sample:")
+st.write(pc_encoder.classes_[:20])
 # ------------------------------
 # Page Config
 # ------------------------------
@@ -81,10 +96,9 @@ elif page == "Prediction":
 
     with col1:
 
-        st_name = st.number_input(
-            "State Code",
-            min_value=0,
-            value=0
+        state = st.selectbox(
+            "State",
+            state_encoder.classes_
         )
 
         year = st.number_input(
@@ -100,34 +114,31 @@ elif page == "Prediction":
             value=1
         )
 
-        pc_name = st.number_input(
-            "Constituency Name Code",
-            min_value=0,
-            value=37
+        constituency = st.selectbox(
+            "Constituency",
+            pc_encoder.classes_
         )
 
-        pc_type = st.selectbox(
-            "Constituency Type Code",
-            [0, 1, 2, 3, 4]
+        pctype = st.selectbox(
+            "Constituency Type",
+            pctype_encoder.classes_
         )
 
     with col2:
 
-        cand_sex = st.selectbox(
-            "Candidate Gender Code",
-            [0, 1, 2, 3]
+        gender = st.selectbox(
+            "Candidate Gender",
+            gender_encoder.classes_
         )
 
-        partyname = st.number_input(
-            "Party Code",
-            min_value=0,
-            value=560
+        party = st.selectbox(
+            "Party",
+            party_encoder.classes_
         )
 
-        partyabbre = st.number_input(
-            "Party Abbreviation Code",
-            min_value=0,
-            value=414
+        party_abbre = st.selectbox(
+            "Party Abbreviation",
+            partyabbre_encoder.classes_
         )
 
         electors = st.number_input(
@@ -137,6 +148,18 @@ elif page == "Prediction":
         )
 
     if st.button("Predict Winner"):
+
+        st_name = state_encoder.transform([state])[0]
+
+        pc_name = pc_encoder.transform([constituency])[0]
+
+        pc_type = pctype_encoder.transform([pctype])[0]
+
+        cand_sex = gender_encoder.transform([gender])[0]
+
+        partyname = party_encoder.transform([party])[0]
+
+        partyabbre = partyabbre_encoder.transform([party_abbre])[0]
 
         input_data = pd.DataFrame(
             [[
@@ -172,6 +195,8 @@ elif page == "Prediction":
         else:
 
             st.error("❌ Predicted Loser")
+
+
 # =====================================================
 # MODEL COMPARISON
 # =====================================================
@@ -187,8 +212,8 @@ elif page == "Model Comparison":
             "XGBoost"
         ],
         "Accuracy":[
-            0.0131,
-            0.9894,
+            0.7859,
+            0.9897,
             0.9893
         ]
     })
