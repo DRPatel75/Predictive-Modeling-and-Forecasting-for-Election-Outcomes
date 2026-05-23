@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import joblib
+df_original = pd.read_csv("dataset/election_data.csv")
 
 # =====================================================
 # PAGE CONFIG
@@ -106,16 +107,14 @@ elif page == "Prediction":
             value=2014
         )
 
-        pc_no = st.number_input(
-            "Constituency Number",
-            min_value=1,
-            value=1
-        )
-
         constituency = st.selectbox(
             "Constituency",
             list(pc_encoder.classes_)
         )
+
+        pc_no = int(
+        df_original[df_original['pc_name'] == constituency]['pc_no'].iloc[0]
+        )   
 
         constituency_type = st.selectbox(
             "Constituency Type",
