@@ -182,7 +182,9 @@ elif page == "Prediction":
 
         if prediction[0] == 1:
 
-            st.success("🎉 Predicted Winner")
+            prob = rf.predict_proba(input_data)[0][1]
+
+            st.success(f"Winner Probability: {prob*100:.2f}%")
 
         else:
 
