@@ -1,26 +1,10 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import os
 
-state_encoder = joblib.load("models/st_name_encoder.pkl")
-pc_encoder = joblib.load("models/pc_name_encoder.pkl")
-party_encoder = joblib.load("models/partyname_encoder.pkl")
-partyabbre_encoder = joblib.load("models/partyabbre_encoder.pkl")
-gender_encoder = joblib.load("models/cand_sex_encoder.pkl")
-pctype_encoder = joblib.load("models/pc_type_encoder.pkl")
-
-st.write("State Encoder Sample:")
-st.write(state_encoder.classes_[:20])
-
-st.write("Party Encoder Sample:")
-st.write(party_encoder.classes_[:20])
-
-st.write("PC Encoder Sample:")
-st.write(pc_encoder.classes_[:20])
-# ------------------------------
-# Page Config
-# ------------------------------
+# =====================================================
+# PAGE CONFIG
+# =====================================================
 
 st.set_page_config(
     page_title="Election Outcome Prediction",
@@ -28,15 +12,26 @@ st.set_page_config(
     layout="wide"
 )
 
-# ------------------------------
-# Load Models
-# ------------------------------
+# =====================================================
+# LOAD MODEL
+# =====================================================
 
 rf = joblib.load("models/random_forest.pkl")
 
-# ------------------------------
-# Sidebar
-# ------------------------------
+# =====================================================
+# LOAD ENCODERS
+# =====================================================
+
+state_encoder = joblib.load("models/st_namest_name_encoder.pkl")
+pc_encoder = joblib.load("models/pc_namest_name_encoder.pkl")
+party_encoder = joblib.load("models/partynamest_name_encoder.pkl")
+partyabbre_encoder = joblib.load("models/partyabbrest_name_encoder.pkl")
+gender_encoder = joblib.load("models/cand_sexst_name_encoder.pkl")
+pctype_encoder = joblib.load("models/pc_typest_name_encoder.pkl")
+
+# =====================================================
+# SIDEBAR
+# =====================================================
 
 st.sidebar.title("🗳️ Navigation")
 
@@ -52,7 +47,7 @@ page = st.sidebar.radio(
 )
 
 # =====================================================
-# HOME PAGE
+# HOME
 # =====================================================
 
 if page == "Home":
@@ -62,21 +57,18 @@ if page == "Home":
     st.markdown("---")
 
     st.write("""
-    This project predicts election outcomes using Machine Learning.
+    This project predicts election outcomes using machine learning models.
 
     ### Models Used
-
     - Logistic Regression
     - Random Forest
     - XGBoost
 
     ### Forecasting Models
-
     - ARIMA
     - LSTM
 
     ### Evaluation Metrics
-
     - Accuracy
     - Precision
     - Recall
@@ -85,7 +77,7 @@ if page == "Home":
     """)
 
 # =====================================================
-# PREDICTION PAGE
+# PREDICTION
 # =====================================================
 
 elif page == "Prediction":
@@ -98,7 +90,7 @@ elif page == "Prediction":
 
         state = st.selectbox(
             "State",
-            state_encoder.classes_
+            list(state_encoder.classes_)
         )
 
         year = st.number_input(
@@ -116,29 +108,29 @@ elif page == "Prediction":
 
         constituency = st.selectbox(
             "Constituency",
-            pc_encoder.classes_
+            list(pc_encoder.classes_)
         )
 
-        pctype = st.selectbox(
+        constituency_type = st.selectbox(
             "Constituency Type",
-            pctype_encoder.classes_
+            list(pctype_encoder.classes_)
         )
 
     with col2:
 
         gender = st.selectbox(
             "Candidate Gender",
-            gender_encoder.classes_
+            list(gender_encoder.classes_)
         )
 
         party = st.selectbox(
             "Party",
-            party_encoder.classes_
+            list(party_encoder.classes_)
         )
 
         party_abbre = st.selectbox(
             "Party Abbreviation",
-            partyabbre_encoder.classes_
+            list(partyabbre_encoder.classes_)
         )
 
         electors = st.number_input(
@@ -153,7 +145,7 @@ elif page == "Prediction":
 
         pc_name = pc_encoder.transform([constituency])[0]
 
-        pc_type = pctype_encoder.transform([pctype])[0]
+        pc_type = pctype_encoder.transform([constituency_type])[0]
 
         cand_sex = gender_encoder.transform([gender])[0]
 
@@ -194,8 +186,7 @@ elif page == "Prediction":
 
         else:
 
-            st.error("❌ Predicted Loser")
-
+            st.error("❌ Predicted Not Winner")
 
 # =====================================================
 # MODEL COMPARISON
@@ -206,12 +197,14 @@ elif page == "Model Comparison":
     st.title("📊 Model Comparison")
 
     comparison = pd.DataFrame({
-        "Model":[
+
+        "Model": [
             "Logistic Regression",
             "Random Forest",
             "XGBoost"
         ],
-        "Accuracy":[
+
+        "Accuracy": [
             0.7859,
             0.9897,
             0.9893
@@ -225,7 +218,7 @@ elif page == "Model Comparison":
     )
 
 # =====================================================
-# GRAPHS PAGE
+# GRAPHS
 # =====================================================
 
 elif page == "Graphs":
@@ -251,7 +244,7 @@ elif page == "Graphs":
     )
 
 # =====================================================
-# ABOUT PAGE
+# ABOUT
 # =====================================================
 
 elif page == "About":
@@ -261,8 +254,6 @@ elif page == "About":
     st.write("""
     ### Predictive Modeling and Forecasting for Election Outcomes
 
-    Internship Project
-
     Technologies Used:
 
     - Python
@@ -271,8 +262,13 @@ elif page == "About":
     - Scikit-Learn
     - XGBoost
     - TensorFlow
-    - StatsModels
+    - Statsmodels
     - Streamlit
 
-    Developed to predict election winners and forecast future election trends.
+    Models:
+    - Logistic Regression
+    - Random Forest
+    - XGBoost
+    - ARIMA
+    - LSTM
     """)
