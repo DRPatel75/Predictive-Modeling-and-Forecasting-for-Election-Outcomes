@@ -52,6 +52,12 @@ page = st.sidebar.radio(
 
 if page == "Home":
 
+    df = pd.read_csv("dataset/election_data.csv")
+
+    st.metric("Records", len(df))
+    st.metric("States", df['st_name'].nunique())
+    st.metric("Parties", df['partyname'].nunique())
+
     st.title("🗳️ Election Outcome Prediction & Forecasting")
 
     st.markdown("---")
